@@ -1,0 +1,158 @@
+#REQUIRE KEYS
+#REQUIRE SD
+#REQUIRE MINERVA
+#REQUIRE VER 4.0.0
+
+version = "1.0"
+PTR = "sd:/prodinfo.bin"
+
+Title = {
+    color(0x4040FF)
+    println("Prodinfo Restore " + version + "\n\n")
+    color(0xFFFFFF)
+}
+
+BackupProd = {
+
+    mkdir("sd:/tegraexplorer")
+    mkdir("sd:/tegraexplorer/prodinfo")
+    backup_path = "sd:/tegraexplorer/prodinfo"
+
+    if (fsexists(combinepath(backup_path, "PRODINFO_BACKUP.bin"))){
+        color(0xFFFF00)
+        println("WARNING")
+        color(0xFFFFFF)
+        println("A backup already exist in " + backup_path)
+        println("Do you want to overwrite it? \n")
+        res = menu(["No", "Yes"], 0)
+        if (res == 0){
+            exit()
+        }
+    }
+
+    clear()
+    Title()
+
+    println("Backing up PRODINFO...")
+    if (mmcread(combinepath(backup_path, "PRODINFO_BACKUP.bin"), "PRODINFO")){
+			color(0xFF0000)
+            println("ERROR! Failed to back up PRODINFO! \n\nPress any key to exit!")
+            pause()
+            exit()
+		}
+    
+    color(0x00FF00)
+    println("Successfully backed up PRODINFO to " + backup_path + "\n")
+    color(0XFFFFFF)
+    println("Press any key to continue...")
+    pause()
+}
+
+RestoreProdBin = {
+
+    println("Checking PRODINFO file to restore...")
+    
+    if (fsexists(PTR).not()){
+        color(0xFF0000)
+        println("ERROR! Failed to find a file named prodinfo.bin! \nBe sure to place prodinfo.bin on the root of the sd! \n\nPress any key to exit!")
+        pause()
+        exit()
+    }
+    FTR = readfile(PTR)
+    println("Found prodinfo.bin...")
+
+    ptype = 0
+    if (FTR.len() == 4176896){
+        ptype = 1
+        println("Found PRODINFO partition backup!")
+        println()
+    }
+    if (FTR.len() == 32768){
+        ptype = 2
+        println("Found partial PRODINFO backup!")
+        println()
+    }
+
+    if (ptype == 0){
+        color(0xFF0000)
+        println("ERROR! Failed to find a valid prodinfo.bin! \nprodinfo.bin size is not correct! \n\nPress any key to exit!")
+        pause()
+        exit()
+    }
+
+    if (ptype == 1){
+        println("Restoring PRODINFO from " + PTR + "...")
+        if (mmcwrite(PTR, "PRODINFO")){
+			color(0xFF0000)
+            println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
+            pause()
+            exit()
+		}
+    }
+
+    if (ptype == 2){
+        println("Creating prodinfo_full.bin...")
+        copyfile(backup_path, "sd:/prodinfo_full.bin")
+        writefile("sd:/prodinfo_full.bin", FTR)
+        println("Restoring PRODINFO from sd:/prodinfo_full.bin...")
+        if (mmcwrite("sd:/prodinfo_full.bin...", "PRODINFO")){
+			color(0xFF0000)
+            println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
+            pause()
+            exit()
+		}
+    }
+
+    color(0x00FF00)
+    println("Successfully restored PRODINFO!")
+    println()
+    color(0xFFFFFF)
+    print("Press any key to exit...")
+    pause()
+    exit()
+}
+
+Title()
+
+if (emu()){
+    println("EmuMMC enabled! \nWhere do you want to restore your PRODINFO partition?\n")
+    res = menu(["Cancel", "SysMMC", "EmuMMC"], 0, [0xFF00FF, 0x00FFFF, 0x00FFFF])
+}.else(){
+    println("EmuMMC disabled! \nRestoring on sysMMC?")
+    res = menu(["No", "Yes"],0)
+}
+
+if (res == 0){
+    exit()
+}
+if (res == 1){
+    mmcread = emmcread
+	mmcwrite = emmcwrite
+}
+if (res == 2){
+    mmcread = emummcread
+	mmcwrite = emummcwrite
+}
+
+clear()
+Title()
+
+BackupProd()
+
+clear()
+Title()
+
+color(0xFF0000)
+println("WARNING")
+color(0xFFFF00)
+println("Proceeding will OVERWRITE your current PRODINFO! \nIf you don't know what you are doing, please exit immediatly!\n")
+color(0xFF0000)
+println("Press Power to proceed. Press any other key to exit.")
+if (pause().power.not()){
+	exit()
+}
+
+clear()
+Title()
+
+RestoreProdBin()
