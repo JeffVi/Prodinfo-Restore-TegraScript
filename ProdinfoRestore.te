@@ -35,11 +35,11 @@ BackupProd = {
 
     println("Backing up PRODINFO...")
     if (mmcread(combinepath(backup_path, "PRODINFO_BACKUP.bin"), "PRODINFO")){
-			color(0xFF0000)
-            println("ERROR! Failed to back up PRODINFO! \n\nPress any key to exit!")
-            pause()
-            exit()
-		}
+        color(0xFF0000)
+        println("ERROR! Failed to back up PRODINFO! \n\nPress any key to exit!")
+        pause()
+        exit()
+    }
     
     color(0x00FF00)
     println("Successfully backed up PRODINFO to " + backup_path + "\n")
@@ -83,11 +83,11 @@ RestoreProdBin = {
     if (ptype == 1){
         println("Restoring PRODINFO from " + PTR + "...")
         if (mmcwrite(PTR, "PRODINFO")){
-			color(0xFF0000)
+            color(0xFF0000)
             println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
             pause()
             exit()
-		}
+        }
     }
 
     if (ptype == 2){
@@ -96,11 +96,11 @@ RestoreProdBin = {
         writefile("sd:/prodinfo_full.bin", FTR)
         println("Restoring PRODINFO from sd:/prodinfo_full.bin...")
         if (mmcwrite("sd:/prodinfo_full.bin...", "PRODINFO")){
-			color(0xFF0000)
+            color(0xFF0000)
             println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
             pause()
             exit()
-		}
+        }
     }
 
     color(0x00FF00)
@@ -127,11 +127,11 @@ if (res == 0){
 }
 if (res == 1){
     mmcread = emmcread
-	mmcwrite = emmcwrite
+    mmcwrite = emmcwrite
 }
 if (res == 2){
     mmcread = emummcread
-	mmcwrite = emummcwrite
+    mmcwrite = emummcwrite
 }
 
 clear()
@@ -149,7 +149,7 @@ println("Proceeding will OVERWRITE your current PRODINFO! \nIf you don't know wh
 color(0xFF0000)
 println("Press Power to proceed. Press any other key to exit.")
 if (pause().power.not()){
-	exit()
+    exit()
 }
 
 clear()
