@@ -3,7 +3,7 @@
 #REQUIRE MINERVA
 #REQUIRE VER 4.0.0
 
-version = "1.0"
+version = "1.2"
 
 Title = {
     color(0x4040FF)
