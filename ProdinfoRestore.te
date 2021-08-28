@@ -4,7 +4,7 @@
 #REQUIRE VER 4.0.0
 
 version = "1.0"
-PTR = "sd:/prodinfo.bin"
+path2restore = "sd:/prodinfo.bin"
 
 Title = {
     color(0x4040FF)
@@ -52,22 +52,22 @@ RestoreProdBin = {
 
     println("Checking PRODINFO file to restore...")
     
-    if (fsexists(PTR).not()){
+    if (fsexists(path2restore).not()){
         color(0xFF0000)
         println("ERROR! Failed to find a file named prodinfo.bin! \nBe sure to place prodinfo.bin on the root of the sd! \n\nPress any key to exit!")
         pause()
         exit()
     }
-    FTR = readfile(PTR)
+    file2restore = readfile(path2restore)
     println("Found prodinfo.bin...")
 
     ptype = 0
-    if (FTR.len() == 4176896){
+    if (file2restore.len() == 4176896){
         ptype = 1
         println("Found PRODINFO partition backup!")
         println()
     }
-    if (FTR.len() == 32768){
+    if (file2restore.len() == 32768){
         ptype = 2
         println("Found partial PRODINFO backup!")
         println()
@@ -81,8 +81,8 @@ RestoreProdBin = {
     }
 
     if (ptype == 1){
-        println("Restoring PRODINFO from " + PTR + "...")
-        if (mmcwrite(PTR, "PRODINFO")){
+        println("Restoring full PRODINFO from " + path2restore + "...")
+        if (mmcwrite(path2restore, "PRODINFO")){
             color(0xFF0000)
             println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
             pause()
@@ -91,11 +91,8 @@ RestoreProdBin = {
     }
 
     if (ptype == 2){
-        println("Creating prodinfo_full.bin...")
-        copyfile(backup_path, "sd:/prodinfo_full.bin")
-        writefile("sd:/prodinfo_full.bin", FTR)
-        println("Restoring PRODINFO from sd:/prodinfo_full.bin...")
-        if (mmcwrite("sd:/prodinfo_full.bin...", "PRODINFO")){
+        println("Restoring partial PRODINFO from " + path2restore + "...")
+        if (mmcwrite(path2restore, "PRODINFO")){
             color(0xFF0000)
             println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
             pause()
