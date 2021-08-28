@@ -15,7 +15,7 @@ This will OVERWRITE your PRODINFO.
 
 This should only be used as a recover attempt if you messed up with your PRODINFO.
 
-There is no verification of the PRODINFO backup besides its size.
+There is no verification of the PRODINFO backup besides its size and if it starts with CAL0.
 
 # How To Use
 
