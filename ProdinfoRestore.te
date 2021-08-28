@@ -4,11 +4,10 @@
 #REQUIRE VER 4.0.0
 
 version = "1.0"
-path2restore = "sd:/prodinfo.bin"
 
 Title = {
     color(0x4040FF)
-    println("Prodinfo Restore " + version + "\n\n")
+    println("Prodinfo Restore", version, "\n\n")
     color(0xFFFFFF)
 }
 
@@ -22,7 +21,7 @@ BackupProd = {
         color(0xFFFF00)
         println("WARNING")
         color(0xFFFFFF)
-        println("A backup already exist in " + backup_path)
+        println("A backup already exist in ", backup_path)
         println("Do you want to overwrite it? \n")
         res = menu(["No", "Yes"], 0)
         if (res == 0){
@@ -42,7 +41,7 @@ BackupProd = {
     }
     
     color(0x00FF00)
-    println("Successfully backed up PRODINFO to " + backup_path + "\n")
+    println("Successfully backed up PRODINFO to", backup_path, "\n")
     color(0XFFFFFF)
     println("Press any key to continue...")
     pause()
@@ -50,41 +49,28 @@ BackupProd = {
 
 RestoreProdBin = {
 
-    println("Checking PRODINFO file to restore...")
-    
-    if (fsexists(path2restore).not()){
-        color(0xFF0000)
-        println("ERROR! Failed to find a file named prodinfo.bin! \nBe sure to place prodinfo.bin on the root of the sd! \n\nPress any key to exit!")
-        pause()
-        exit()
-    }
-    file2restore = readfile(path2restore)
-    println("Found prodinfo.bin...")
-
-    CheckProdinfoSize()
-
     if (ptype == 0){
         color(0xFF0000)
-        println("ERROR! Failed to find a valid prodinfo.bin! \nprodinfo.bin size is not correct! \n\nPress any key to exit!")
+        println("ERROR! \nSize is not correct! \nFailed to restore from", path2restore, "\n\nPress any key to exit!")
         pause()
         exit()
     }
 
     if (ptype == 1){
-        println("Restoring full PRODINFO from " + path2restore + "...")
+        println("Restoring full PRODINFO from", path2restore, "...")
         if (mmcwrite(path2restore, "PRODINFO")){
             color(0xFF0000)
-            println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
+            println("ERROR! Failed to restore PRODINFO! \n\nPress any key to exit!")
             pause()
             exit()
         }
     }
 
     if (ptype == 2){
-        println("Restoring partial PRODINFO from " + path2restore + "...")
+        println("Restoring partial PRODINFO from", path2restore, "...")
         if (mmcwrite(path2restore, "PRODINFO")){
             color(0xFF0000)
-            println("ERROR! Failed to restore prodinfo.bin! \n\nPress any key to exit!")
+            println("ERROR! Failed to restore PRODINFO! \n\nPress any key to exit!")
             pause()
             exit()
         }
@@ -99,30 +85,106 @@ RestoreProdBin = {
     exit()
 }
 
+CheckProdinfoPath = {
+
+    println("From what do you want to restore?\n")
+    res = menu(["AMS automatic backup", "sd:/prodinfo.bin"], 0, [0x00FFFF, 0x00FFFF])
+    
+    clear()
+    Title()
+
+    if (res == 0){
+        SetAMSPath()
+        if (ams_backupnotfound){
+            color(0xFF0000)
+            println("ERROR! Failed to find a non blanked AMS automatic backup! \n\nPress any key to exit!")
+            pause()
+            exit()
+        }
+    }
+    
+    if (res == 1){
+        SetProdinfoBinPath()
+    }
+
+    file2restore = readfile(path2restore)
+}
+
+SetAMSPath = {
+    ams_autobackupdir = readdir("sd:/atmosphere/automatic_backups")
+        
+    ams_backupnotfound = 1
+        
+    println("Checking for AMS automatic backup...")
+    if (ams_autobackupdir.result){
+        color(0xFF0000)
+        println("ERROR! Failed to open sd:/atmosphere/automatic_backups \n\nPress any key to exit!")
+        pause()
+        exit()
+    }
+
+    prodinfoSTR = "PRODINFO"
+    nullSTR = "0000000000"
+
+    ams_autobackupdir.files.foreach("binfilename"){
+        if (binfilename.len() == 27){
+            splitted = binfilename.split("_")
+            if (splitted.len() == 2){
+                if ((splitted[0].bytes().find(nullSTR.bytes()) == -1) && (splitted[1].bytes().find(prodinfoSTR.bytes()) != -1)){
+                    color(0x00FF00)
+                    println("Found AMS Automatic Backup:", binfilename)
+                    println()
+                    color(0xFFFFFF)
+                    ams_backupnotfound = 0
+                    path2restore = combinepath("sd:/atmosphere/automatic_backups", binfilename)
+                    break()
+                }
+            }
+        }
+    }
+}
+
+SetProdinfoBinPath = {
+
+    println("Checking for prodinfo.bin backup...")
+
+    if (fsexists("sd:/prodinfo.bin").not()){
+        color(0xFF0000)
+        println("ERROR! Failed to find a file named prodinfo.bin! \nBe sure to place prodinfo.bin on the root of the sd! \n\nPress any key to exit!")
+        pause()
+        exit()
+    }
+    color(0x00FF00)
+    println("Found prodinfo.bin")
+    color(0xFFFFFF)
+    path2restore = "sd:/prodinfo.bin"
+}
+
 CheckProdinfoSize = {
     
     ptype = 0
-    CAL0 = ["BYTE[]", 0x43, 0x41, 0x4C, 0x30]
 
     if (file2restore.len() == 4176896){
         ptype = 1
-        println("Found PRODINFO partition backup!")
+        println("Using full PRODINFO backup!")
         CheckCAL0()
         println()
     }
     if (file2restore.len() == 32768){
         ptype = 2
-        println("Found partial PRODINFO backup!")
+        println("Using partial PRODINFO backup!")
         CheckCAL0()
         println()
     }
 }
 
 CheckCAL0 = {
+
+    CAL0 = ["BYTE[]", 0x43, 0x41, 0x4C, 0x30]
     head = file2restore.slice(0x0, 0x4).project()
     if ((head == CAL0).not()){
         color(0xFF0000)
-        println("ERROR! " + path2restore + " is not valid! Found " + head.bytestostr() + " instead of " + CAL0.bytestostr())
+        println("ERROR!", path2restore, "is not valid! Found", head.bytestostr(), "instead of", CAL0.bytestostr())
         println("\nPress any key to exit!")
         pause()
         exit()
@@ -150,9 +212,10 @@ if (res == 2){
     mmcread = emummcread
     mmcwrite = emummcwrite
 }
+    
+CheckProdinfoPath()
 
-clear()
-Title()
+CheckProdinfoSize()
 
 BackupProd()
 

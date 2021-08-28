@@ -7,6 +7,8 @@ Before restoration, a backup of your current PRODINFO is made */tegraexplorer/pr
 
 This script uses [TegraScript v3](https://github.com/suchmememanyskill/TegraScript).
 
+You can restore from AMS automatic backup or from `prodinfo.bin` on the root of your sd.
+
 # Warning
 
 DO NOT USE THIS SCRIPT IF YOU DON'T KNOW WHAT IT DOES!
@@ -23,6 +25,5 @@ You will need the latest release of [Hekate](https://github.com/CTCaer/hekate/re
 
 - Extract the `bootloader` from the Hekate release on your SD.
 - Place the `ProdinfoRestore.te` script on your sd.
-- Place your PRODINFO backup on your SD root and rename it to `prodinfo.bin`.
 - Insert your SD in your Switch and launch the TegraExplorer payload.
 - Browse your SD and launch the `ProdinfoRestore.te` script.
