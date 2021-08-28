@@ -61,17 +61,7 @@ RestoreProdBin = {
     file2restore = readfile(path2restore)
     println("Found prodinfo.bin...")
 
-    ptype = 0
-    if (file2restore.len() == 4176896){
-        ptype = 1
-        println("Found PRODINFO partition backup!")
-        println()
-    }
-    if (file2restore.len() == 32768){
-        ptype = 2
-        println("Found partial PRODINFO backup!")
-        println()
-    }
+    CheckProdinfoSize()
 
     if (ptype == 0){
         color(0xFF0000)
@@ -107,6 +97,36 @@ RestoreProdBin = {
     print("Press any key to exit...")
     pause()
     exit()
+}
+
+CheckProdinfoSize = {
+    
+    ptype = 0
+    CAL0 = ["BYTE[]", 0x43, 0x41, 0x4C, 0x30]
+
+    if (file2restore.len() == 4176896){
+        ptype = 1
+        println("Found PRODINFO partition backup!")
+        CheckCAL0()
+        println()
+    }
+    if (file2restore.len() == 32768){
+        ptype = 2
+        println("Found partial PRODINFO backup!")
+        CheckCAL0()
+        println()
+    }
+}
+
+CheckCAL0 = {
+    head = file2restore.slice(0x0, 0x4).project()
+    if ((head == CAL0).not()){
+        color(0xFF0000)
+        println("ERROR! " + path2restore + " is not valid! Found " + head.bytestostr() + " instead of " + CAL0.bytestostr())
+        println("\nPress any key to exit!")
+        pause()
+        exit()
+    }
 }
 
 Title()
