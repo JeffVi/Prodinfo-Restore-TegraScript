@@ -27,3 +27,6 @@ You will need the latest release of [Hekate](https://github.com/CTCaer/hekate/re
 - Place the `ProdinfoRestore.te` script on your sd.
 - Insert your SD in your Switch and launch the TegraExplorer payload.
 - Browse your SD and launch the `ProdinfoRestore.te` script.
+
+
+Thanks to [bleck9999](https://github.com/bleck9999) and [suchmememanyskill](https://github.com/suchmememanyskill) for their advices.
