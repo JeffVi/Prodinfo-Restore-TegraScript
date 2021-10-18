@@ -3,7 +3,7 @@ A script to restore a prodinfo backup on your Switch
 
 Can restore a full PRODINFO backup, or an automatic backup from [Atmosphère](https://github.com/Atmosphere-NX/Atmosphere), on sysMMC and emuMMC.
 
-Before restoration, a backup of your current PRODINFO is made */tegraexplorer/prodinfo/PRODINFO_BACKUP.bin*
+Before restoration, a backup of your current PRODINFO is made */tegraexplorer/prodinfo/PRODINFO_BAK.bin*
 
 This script uses [TegraScript v3](https://github.com/suchmememanyskill/TegraScript).
 
@@ -21,10 +21,9 @@ There is no verification of the PRODINFO backup besides its size and if it start
 
 # How To Use
 
-You will need the latest release of [Hekate](https://github.com/CTCaer/hekate/releases) and [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer/releases).
+You will need the latest release of [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer/releases).
 
-- Extract the `bootloader` from the Hekate release on your SD.
-- Place the `ProdinfoRestore.te` script on your sd.
+- Paste the `ProdinfoRestore.te` script on your sd.
 - Insert your SD in your Switch and launch the TegraExplorer payload.
 - Browse your SD and launch the `ProdinfoRestore.te` script.
 
