@@ -23,7 +23,7 @@ There is no verification of the PRODINFO backup besides its size and if it start
 
 You will need the latest release of [TegraExplorer](https://github.com/suchmememanyskill/TegraExplorer/releases).
 
-- Paste the `ProdinfoRestore.te` script on your sd.
+- Paste the `ProdinfoRestore.te` script from the [latest release](https://github.com/JeffVi/Prodinfo-Restore-TegraScript/releases/latest) on your sd.
 - Insert your SD in your Switch and launch the TegraExplorer payload.
 - Browse your SD and launch the `ProdinfoRestore.te` script.
 
